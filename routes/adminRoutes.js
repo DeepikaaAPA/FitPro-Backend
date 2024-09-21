@@ -15,10 +15,10 @@ adminRouter.get(
   adminController.getEnquiries
 );
 adminRouter.delete(
-  "/enquiry",
+  "/closeEnquiry/:id",
   auth.verifyToken,
   auth.isAdmin,
-  adminController.deleteEnquiry
+  adminController.closeEnquiry
 );
 
 // export the router

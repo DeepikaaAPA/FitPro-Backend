@@ -4,16 +4,17 @@ const userRouter = require("./routes/userRoutes");
 const authRouter = require("./routes/authRoutes");
 const cookieParser = require("cookie-parser");
 const adminRouter = require("./routes/adminRoutes");
-const reviewRouter = require("./routes/reviewRoutes");
-const cors = require("cors");
 
+const cors = require("cors");
+const { FORNTEND_LINK } = require("./utils/config");
+const trainerRouter = require("./routes/trainerRoutes");
 // create a new express app
 const app = express();
 
 // use the cors middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: FORNTEND_LINK,
     credentials: true,
   })
 );
@@ -28,7 +29,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/admin/reviews", reviewRouter);
+app.use("/api/v1/trainer", trainerRouter);
 
 // export the app
 module.exports = app;

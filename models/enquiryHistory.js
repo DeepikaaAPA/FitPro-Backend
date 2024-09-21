@@ -1,18 +1,22 @@
 // import mongoose
 const mongoose = require("mongoose");
-
 // create  a new schema
-const enquirySchema = new mongoose.Schema({
+const enquiryHistorySchema = new mongoose.Schema({
   email: String,
   firstname: String,
   lastname: String,
   phone: String,
   query: String,
-  enquiredOn: {
+  enquiredOn: Date,
+  closedOn: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
 });
 
 // create a new model and export it
-module.exports = mongoose.model("Enquiry", enquirySchema, "enquiries");
+module.exports = mongoose.model(
+  "EnquiryHistory",
+  enquiryHistorySchema,
+  "enquiriesHistory"
+);
