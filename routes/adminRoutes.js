@@ -20,6 +20,23 @@ adminRouter.delete(
   auth.isAdmin,
   adminController.closeEnquiry
 );
-
+adminRouter.get(
+  "/getApplications",
+  auth.verifyToken,
+  auth.isAdmin,
+  adminController.getApplications
+);
+adminRouter.post(
+  "/approveTrainer/:id",
+  auth.verifyToken,
+  auth.isAdmin,
+  adminController.approveTrainer
+);
+adminRouter.post(
+  "/rejectTrainer/:id",
+  auth.verifyToken,
+  auth.isAdmin,
+  adminController.rejectTrainer
+);
 // export the router
 module.exports = adminRouter;

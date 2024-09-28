@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
   phone: Number,
   role: {
     type: String,
-    enum: ["admin", "user","trainer"],
+    enum: ["admin", "user", "trainer"],
     default: "user",
   },
   activateToken: { type: String, default: null },

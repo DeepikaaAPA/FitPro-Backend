@@ -1,4 +1,4 @@
-const Application = require("../models/application");
+const Application = require("../models/trainer/application");
 
 const trainerController = {
   postApplication: async (req, res) => {
@@ -22,10 +22,11 @@ const trainerController = {
         experience,
         appliedOn: new Date(),
       });
+      console.log("userId: ", userId);
       await newApplication.save();
       return res.status(200).json({
         message:
-          "Application submitted. We will contact you wihin 10 business days.",
+          "Application submitted. We will contact you within 10 business days.",
       });
     } catch (error) {
       return res.status(500).json({ message: error.message });
