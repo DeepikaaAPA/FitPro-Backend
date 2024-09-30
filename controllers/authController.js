@@ -149,7 +149,15 @@ const authController = {
         secure: true,
       });
 
-      res.json({ message: "Logged in.", token });
+      res.json({
+        message: "Logged in.",
+        token,
+        userId: user._id,
+        role: user.role,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
