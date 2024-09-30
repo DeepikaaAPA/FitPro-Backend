@@ -3,6 +3,7 @@ const trainerController = require("../controllers/trainerController");
 const auth = require("../utils/auth");
 const uploadDp = require("../utils/uploadDp");
 const uploadImages = require("../utils/uploadImages");
+const uploadVideo = require("../utils/uploadVideo");
 const trainerRouter = express.Router();
 
 trainerRouter.post(
@@ -17,6 +18,12 @@ trainerRouter.post(
   auth.verifyToken,
   uploadDp.single("profilePic"),
   trainerController.updateDp
+);
+trainerRouter.post(
+  "/video/:id",
+  auth.verifyToken,
+  uploadVideo.single("video"),
+  trainerController.updateVideo
 );
 trainerRouter.post(
   "/images/:id",

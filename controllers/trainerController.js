@@ -79,6 +79,20 @@ const trainerController = {
       return res.status(500).json({ message: error.message });
     }
   },
+  updateVideo: async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(200).send("No new video uploaded.");
+      }
+
+      const userId = req.userId;
+
+      await Trainer.updateOne({ userId }, { $set: { video: req.file.path } });
+      return res.send("Video uploaded");
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  },
   updateTrainer: async (req, res) => {
     try {
       const userId = req.userId;
@@ -103,7 +117,7 @@ const trainerController = {
             firstname,
             lastname,
             experience,
-            disciplines: disciplines[0].split(","),
+            disciplines,
             description,
             price,
             languages,
