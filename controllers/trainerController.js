@@ -45,6 +45,40 @@ const trainerController = {
       return res.status(500).json({ message: error.message });
     }
   },
+  getAll: async (req, res) => {
+    try {
+      const results = await Trainer.find();
+      return res.json(results);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  search: async (req, res) => {
+    try {
+      const { filters } = req.body;
+      const filterDisciplines = [];
+      if (filters.Yoga) filterDisciplines.push("Yoga");
+      if (filters.Zumba) filterDisciplines.push("Zumba");
+      if (filters.Pilates) filterDisciplines.push("Pilates");
+      if (filters["Postpartum Fitness"])
+        filterDisciplines.push("Postpartum Fitness");
+      if (filters.Cardio) filterDisciplines.push("Cardio");
+      if (filters.Aerobics) filterDisciplines.push("Aerobics");
+      if (filters["Strength Training"])
+        filterDisciplines.push("StrengthTraining");
+      const search = {
+        languages: { $regex: filters.language || "", $options: "i" },
+        price: { $lte: filters.price },
+      };
+      if (!filters.all) search.disciplines = { $in: filterDisciplines };
+      const results = await Trainer.find(search);
+      return res.json(results);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
   updateDp: async (req, res) => {
     try {
       if (!req.file) {

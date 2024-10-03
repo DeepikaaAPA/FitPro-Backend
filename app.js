@@ -4,7 +4,7 @@ const userRouter = require("./routes/userRoutes");
 const authRouter = require("./routes/authRoutes");
 const cookieParser = require("cookie-parser");
 const adminRouter = require("./routes/adminRoutes");
-const multer = require('multer');
+const path = require("path");
 const cors = require("cors");
 const { FORNTEND_LINK } = require("./utils/config");
 const trainerRouter = require("./routes/trainerRoutes");
@@ -18,7 +18,7 @@ app.use(
     credentials: true,
   })
 );
-
+app.use(express.static(path.join(__dirname, "public")));
 // use the express json middleware for parsing json data
 app.use(express.json());
 

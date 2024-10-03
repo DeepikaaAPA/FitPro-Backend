@@ -11,7 +11,9 @@ trainerRouter.post(
   auth.verifyToken,
   trainerController.postApplication
 );
-trainerRouter.get("/:id", auth.verifyToken, trainerController.getTrainer);
+trainerRouter.get("/get/:id",  trainerController.getTrainer);
+trainerRouter.get("/all",  trainerController.getAll);
+trainerRouter.post("/search",  trainerController.search);
 trainerRouter.post("/:id", auth.verifyToken, trainerController.updateTrainer);
 trainerRouter.post(
   "/dp/:id",
