@@ -1,5 +1,6 @@
 const Application = require("../models/trainer/application");
 const Trainer = require("../models/trainer/Trainer");
+const Booking = require("../models/trainer/booking");
 const path = require("path");
 const trainerController = {
   postApplication: async (req, res) => {
@@ -57,6 +58,10 @@ const trainerController = {
   search: async (req, res) => {
     try {
       const { filters } = req.body;
+      const search = {
+        languages: { $regex: filters.language || "", $options: "i" },
+        price: { $lte: filters.price },
+      };
       const filterDisciplines = [];
       if (filters.Yoga) filterDisciplines.push("Yoga");
       if (filters.Zumba) filterDisciplines.push("Zumba");
@@ -67,11 +72,19 @@ const trainerController = {
       if (filters.Aerobics) filterDisciplines.push("Aerobics");
       if (filters["Strength Training"])
         filterDisciplines.push("StrengthTraining");
-      const search = {
-        languages: { $regex: filters.language || "", $options: "i" },
-        price: { $lte: filters.price },
-      };
+
       if (!filters.all) search.disciplines = { $in: filterDisciplines };
+      if (filters.query !== "") {
+        const searchWords = filters.query
+          .split(" ")
+          .map((word) => new RegExp(word, "i"));
+        search.$or = [
+          { firstname: { $in: searchWords } },
+          { lastname: { $in: searchWords } },
+          { description: { $in: searchWords } },
+          { disciplines: { $in: searchWords } },
+        ];
+      }
       const results = await Trainer.find(search);
       return res.json(results);
     } catch (error) {
@@ -161,6 +174,69 @@ const trainerController = {
         }
       );
       return res.json({ message: "Trainer account updated." });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  getAvailableSlots: async (req, res) => {
+    try {
+      const { date, trainerId } = req.query;
+
+      const results = await Booking.find({ trainerId, bookedDate: date });
+      const bookedSlots = results.map((doc) => doc.bookedSlot);
+      const allSlots = [
+        "06:00 am",
+        "07:00 am",
+        "08:00 am",
+        "09:00 am",
+        "10:00 am",
+        "11:00 am",
+        "02:00 pm",
+        "03:00 pm",
+        "04:00 pm",
+        "05:00 pm",
+        "06:00 pm",
+      ];
+      const availableSlots = allSlots.filter(
+        (slot) => !bookedSlots.includes(slot)
+      );
+      res.send(availableSlots);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  book: async (req, res) => {
+    try {
+      const userId = req.userId;
+      const { cart } = req.body;
+      cart.forEach((item) => {
+        const i = item;
+        item.selectedSlots.forEach(async (slot) => {
+          const newBooking = new Booking({
+            userId,
+            user: i.user,
+            bookedDate: new Date(i.selectedDate),
+            bookedSlot: slot,
+            trainerId: i.trainerId,
+            trainer: i.trainer,
+          });
+          await newBooking.save();
+          console.log("slot", slot);
+        });
+      });
+      res.send("Booked successfully.");
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  getBookings: async (req, res) => {
+    try {
+      const trainerId = req.params.id;
+      const bookings = await Booking.find({ trainerId });
+      res.json({ bookings });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });

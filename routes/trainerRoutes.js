@@ -11,10 +11,11 @@ trainerRouter.post(
   auth.verifyToken,
   trainerController.postApplication
 );
-trainerRouter.get("/get/:id",  trainerController.getTrainer);
-trainerRouter.get("/all",  trainerController.getAll);
-trainerRouter.post("/search",  trainerController.search);
-trainerRouter.post("/:id", auth.verifyToken, trainerController.updateTrainer);
+trainerRouter.get("/get/:id", trainerController.getTrainer);
+trainerRouter.get("/all", trainerController.getAll);
+trainerRouter.post("/search", trainerController.search);
+trainerRouter.post("/update/:id", auth.verifyToken, trainerController.updateTrainer);
+trainerRouter.post("/book", auth.verifyToken, trainerController.book);
 trainerRouter.post(
   "/dp/:id",
   auth.verifyToken,
@@ -32,5 +33,15 @@ trainerRouter.post(
   auth.verifyToken,
   uploadImages.array("images", 10),
   trainerController.updateImages
+);
+trainerRouter.get(
+  "/slots",
+  auth.verifyToken,
+  trainerController.getAvailableSlots
+);
+trainerRouter.get(
+  "/bookings/:id",
+  auth.verifyToken,
+  trainerController.getBookings
 );
 module.exports = trainerRouter;

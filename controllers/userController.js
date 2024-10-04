@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const Enquiry = require("../models/admin/enquiry");
+const Booking = require("../models/trainer/booking");
 // create a controller object with all the methods that will be used in the routes
 const userController = {
   getUser: async (req, res) => {
@@ -67,6 +68,56 @@ const userController = {
       res.status(200).json({ message: "We will contact you shortly." });
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  },
+  getBookings: async (req, res) => {
+    try {
+      const userId = req.userId;
+      const bookings = await Booking.find({ userId })
+        .sort({ bookedDate: 1, bookedSlot: 1 }) // 1 for ascending order, -1 for descending order
+        .exec();
+      res.json({ bookings });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  getUpcoming: async (req, res) => {
+    try {
+      const userId = req.userId;
+      const bookings = await Booking.find({
+        userId,
+        bookedDate: { $gte: new Date(new Date().toLocaleDateString()) },
+      })
+        .sort({ bookedDate: 1, bookedSlot: 1 }) // 1 for ascending order, -1 for descending order
+        .exec();
+      res.json({ bookings });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  getPast: async (req, res) => {
+    try {
+      const userId = req.userId;
+      const bookings = await Booking.find({
+        userId,
+        bookedDate: { $lt: new Date(new Date().toLocaleDateString()) },
+      });
+      res.json({ bookings });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  cancel: async (req, res) => {
+    try {
+      const id = req.params.id;
+      await Booking.findByIdAndDelete(id);
+      res.send("Cancelled.");
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
     }
   },
 };
