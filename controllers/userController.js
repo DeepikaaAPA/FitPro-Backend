@@ -1,6 +1,10 @@
 const User = require("../models/user");
 const Enquiry = require("../models/admin/enquiry");
 const Booking = require("../models/trainer/booking");
+
+const mongoose = require('mongoose');
+
+const Review = require('../models/review');
 // create a controller object with all the methods that will be used in the routes
 const userController = {
   getUser: async (req, res) => {
@@ -120,7 +124,29 @@ const userController = {
       return res.status(500).json({ message: error.message });
     }
   },
+  getTrainersReviews:async (req, res) => {
+    try {
+      const userId=req.userId;
+      const bookings = await Booking.find({userId,bookedDate:{$lt:new Date(new Date().toLocaleDateString())}})
+      
+      const trainers=new Set( bookings.map(doc=> doc.trainerId))
+      console.log(trainers)
+      const results=[]
+      for(const trainer of trainers){
+       results.push( bookings.find(booking=>booking.trainerId===trainer))
+      }
+   
+      console.log(results)
+      res.json(results)
+    } catch (error) {
+      console.error('Error fetching trainer ratings and reviews:', error);
+      res.status(500).send("internal server error")
+    }
+  }
 };
+
+
+
 
 // export the controller
 module.exports = userController;

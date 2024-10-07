@@ -5,11 +5,12 @@ const ReviewSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }, 
-    bookId: {
+   trainerId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Book',
+        ref: 'Trainer',
     },
     content: String,
+    rating:Number,
     created_at: {
         type: Date,
         default: Date.now,
