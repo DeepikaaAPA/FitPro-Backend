@@ -74,7 +74,7 @@ const userController = {
       res.status(500).json({ message: error.message });
     }
   },
-  getBookings: async (req, res) => {
+  getAllBookings: async (req, res) => {
     try {
       const userId = req.userId;
       const bookings = await Booking.find({ userId })

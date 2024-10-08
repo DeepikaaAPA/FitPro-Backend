@@ -13,9 +13,17 @@ userRouter.get("/", auth.verifyToken, userController.getUser);
 userRouter.put("/", auth.verifyToken, userController.putUser);
 userRouter.delete("/", auth.verifyToken, userController.deleteUser);
 userRouter.delete("/cancel/:id", auth.verifyToken, userController.cancel);
-userRouter.get("/getBookings", auth.verifyToken, userController.getBookings);
+userRouter.get(
+  "/getBookingHistory",
+  auth.verifyToken,
+  userController.getAllBookings
+);
 userRouter.get("/getUpcoming", auth.verifyToken, userController.getUpcoming);
-userRouter.get("/getTrainersReviews", auth.verifyToken, userController.getTrainersReviews);
+userRouter.get(
+  "/getTrainersReviews",
+  auth.verifyToken,
+  userController.getTrainersReviews
+);
 userRouter.post("/postReview", auth.verifyToken, userController.postReview);
 
 // export the router
