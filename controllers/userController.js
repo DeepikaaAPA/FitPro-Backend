@@ -1,10 +1,10 @@
 const User = require("../models/user");
 const Enquiry = require("../models/admin/enquiry");
 const Booking = require("../models/trainer/booking");
+const Trainer = require("../models/trainer/Trainer");
+const mongoose = require("mongoose");
 
-const mongoose = require('mongoose');
-
-const Review = require('../models/review');
+const Review = require("../models/review");
 // create a controller object with all the methods that will be used in the routes
 const userController = {
   getUser: async (req, res) => {
@@ -124,29 +124,74 @@ const userController = {
       return res.status(500).json({ message: error.message });
     }
   },
-  getTrainersReviews:async (req, res) => {
+  getTrainersReviews: async (req, res) => {
     try {
-      const userId=req.userId;
-      const bookings = await Booking.find({userId,bookedDate:{$lt:new Date(new Date().toLocaleDateString())}})
-      
-      const trainers=new Set( bookings.map(doc=> doc.trainerId))
-      console.log(trainers)
-      const results=[]
-      for(const trainer of trainers){
-       results.push( bookings.find(booking=>booking.trainerId===trainer))
+      const userId = req.userId;
+      const bookings = await Booking.find({
+        userId,
+        bookedDate: { $lt: new Date(new Date().toLocaleDateString()) },
+      });
+      console.log(bookings);
+      const trainers = await Booking.distinct("trainerId", {
+        userId,
+        bookedDate: { $lt: new Date(new Date().toLocaleDateString()) },
+      });
+
+      //console.log("trainers", trainers);
+      const results = [];
+      for (let t of trainers) {
+        const trainer = await Trainer.findOne({ userId: t });
+        const review = await Review.findOne({ userId, trainerId: t });
+        results.push({
+          userId,
+          trainerId: t,
+          trainer,
+          review: review?.review,
+          rating: review?.rating,
+        });
       }
-   
-      console.log(results)
-      res.json(results)
+      //console.log("results :", results);
+      res.json(results);
     } catch (error) {
-      console.error('Error fetching trainer ratings and reviews:', error);
-      res.status(500).send("internal server error")
+      console.error("Error fetching trainer ratings and reviews:", error);
+      res.status(500).send(error.message);
     }
-  }
+  },
+  postReview: async (req, res) => {
+    try {
+      const { trainer, trainerId, userId, user, rating, review } = req.body;
+
+      const results = await Review.findOne({ userId, trainerId });
+      console.log(results);
+      if (!results) {
+        const newReview = new Review({
+          trainer,
+          trainerId,
+          userId,
+          user,
+          rating,
+          review,
+        });
+        await newReview.save();
+      } else {
+        await Review.updateOne(
+          { userId, trainerId },
+          { $set: { review, rating } }
+        );
+      }
+      const reviews = await Review.find({ trainerId });
+      let totalRating = 0;
+      for (const r of reviews) {
+        totalRating += r.rating;
+      }
+      const avgRating = totalRating / reviews.length;
+      await Trainer.updateOne({ userId: trainerId }, { $set: { avgRating } });
+      res.send("Review saved.");
+    } catch (error) {
+      console.error("Error posting trainer ratings and reviews:", error);
+      res.status(500).send(error.message);
+    }
+  },
 };
-
-
-
-
 // export the controller
 module.exports = userController;

@@ -22,12 +22,13 @@ const TrainerSchema = new mongoose.Schema({
 
   description: String,
   images: [String],
-  profilePic:String,
+  profilePic: String,
   video: String,
   price: Number,
   languages: String,
   awards: [String],
   qualifications: [String],
+  avgRating: Number,
 });
 
 module.exports = mongoose.model("Trainer", TrainerSchema, "Trainers");

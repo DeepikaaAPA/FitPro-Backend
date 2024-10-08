@@ -16,6 +16,7 @@ userRouter.delete("/cancel/:id", auth.verifyToken, userController.cancel);
 userRouter.get("/getBookings", auth.verifyToken, userController.getBookings);
 userRouter.get("/getUpcoming", auth.verifyToken, userController.getUpcoming);
 userRouter.get("/getTrainersReviews", auth.verifyToken, userController.getTrainersReviews);
+userRouter.post("/postReview", auth.verifyToken, userController.postReview);
 
 // export the router
 module.exports = userRouter;

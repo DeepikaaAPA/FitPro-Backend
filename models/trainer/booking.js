@@ -8,7 +8,7 @@ const BookingSchema = new mongoose.Schema({
   user: { type: Object },
   trainerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "Trainer",
   },
   trainer: { type: Object },
   bookedDate: Date,
