@@ -162,7 +162,7 @@ const userController = {
       const { trainer, trainerId, userId, user, rating, review } = req.body;
 
       const results = await Review.findOne({ userId, trainerId });
-      console.log(results);
+     
       if (!results) {
         const newReview = new Review({
           trainer,

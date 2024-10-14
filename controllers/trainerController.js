@@ -1,7 +1,7 @@
 const Application = require("../models/trainer/application");
 const Trainer = require("../models/trainer/Trainer");
 const Booking = require("../models/trainer/booking");
-const path = require("path");
+const Review = require("../models/review");
 const trainerController = {
   postApplication: async (req, res) => {
     try {
@@ -92,36 +92,40 @@ const trainerController = {
       return res.status(500).json({ message: error.message });
     }
   },
+  // updateDp1: async (req, res) => {
+  //   try {
+  //     if (!req.file) {
+  //       return res.status(200).send("No new dp uploaded.");
+  //     }
+
+  //     const userId = req.userId;
+
+  //     await Trainer.updateOne(
+  //       { userId },
+  //       { $set: { profilePic: req.file.path } }
+  //     );
+  //     return res.send(req.file.path);
+  //   } catch (error) {
+  //     return res.status(500).json({ message: error.message });
+  //   }
+  // },
   updateDp: async (req, res) => {
     try {
-      if (!req.file) {
-        return res.status(200).send("No new dp uploaded.");
-      }
-
       const userId = req.userId;
-
-      await Trainer.updateOne(
-        { userId },
-        { $set: { profilePic: req.file.path } }
-      );
-      return res.send(req.file.path);
+      const profilePic = req.body.url;
+ 
+      await Trainer.updateOne({ userId }, { $set: { profilePic } });
+      return res.send("Profile Picture is updated.");
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
   },
   updateImages: async (req, res) => {
     try {
-      if (!req.files) {
-        return res.status(200).send("No new images uploaded.");
-      }
-
       const userId = req.userId;
-
-      await Trainer.updateOne(
-        { userId },
-        { $set: { images: req.files.map((file) => file.path) } }
-      );
-      return res.send(req.files.length + " images uploaded successfully.");
+      const images = req.body.images;
+      await Trainer.updateOne({ userId }, { $set: { images } });
+      return res.send(" Images uploaded successfully.");
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -234,14 +238,27 @@ const trainerController = {
   },
   getBookings: async (req, res) => {
     try {
-      const trainerId = req.params.id;
-      const bookings = await Booking.find({ trainerId });
+      const trainerId = req.userId;
+      const bookings = await Booking.find({ trainerId })
+        .sort({ bookedDate: -1, bookedSlot: 1 }) // 1 for ascending order, -1 for descending order
+        .exec();
       res.json({ bookings });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });
     }
   },
-
+  getReviews: async (req, res) => {
+    try {
+      const trainerId = req.userId;
+      const reviews = await Review.find({ trainerId })
+        .sort({ updated_at: -1 }) // 1 for ascending order, -1 for descending order
+        .exec();
+      res.json({ reviews });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
 };
 module.exports = trainerController;
